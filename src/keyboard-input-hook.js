@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 
 //this is a modified version of https://github.com/bobinrinder/react-keyboard-input-hook
-//I added functionality to get the actual character that the key press returns when typing (event.key)
+//I added functionality to get the actual character that the key press returns when typing (e.key)
 
 export const FIRE_TV_KEY_CODES = [8, 13, 37, 38, 39, 40, 179, 227, 228];
 

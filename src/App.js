@@ -1,18 +1,36 @@
-import React, { useState,useEffect } from 'react';
+import React, { useState } from 'react';
+import { useKeyUp } from "./keyboard-input-hook";
 import './paper.min.css';
 import './App.css';
-// import useKey from 'use-key-hook';
-import { useKeyUp } from "./keyboard-input-hook";
 
+const numbers=['1','2','3','4','5','6','7','8','9','0'],
+      symbols=['-','+','/','*']
+
+export function isValidInput(expression,input){
+  //valid input can be: a number, 
+  //a symbol if the previous input is a number, 
+  //a negative sign not following another negative sign, 
+  //and there cannot be more than one decimal point per number
+  if (numbers.includes(input)) return true
+  else if (symbols.includes(input) && numbers.includes(expression.slice(-1))) return true
+  else if (input==='-' && expression.slice(-1)!=='-') return true
+  else if (input==='.' && !numberHasMoreThanOneDecimal(expression+input)) return true
+  return false
+}
+
+export function numberHasMoreThanOneDecimal(input){
+  //find two decimal points separated by 0 or more numbers
+  return input.match(/\.\d*\./)!==null
+}
+
+export function isValidExpression(expression){
+  //we validated input but still need to handle the case of an expression that ends in a symbol being invalid
+  return symbols.includes(expression.slice(-1)) ? false : true
+}
 
 function App() {
-
   const [memory,setMemory]= useState(''),
-    [expression,setExpression]= useState(''),
-    numbers=['1','2','3','4','5','6','7','8','9','0'],
-    symbols=['-','+','/','*'],
-    keyNameToSymbols={'Minus':'-','Plus':'+','Slash':'/','asdasd':'*'}
-
+        [expression,setExpression]= useState('')
 
   const { key } = useKeyUp();
 
@@ -23,28 +41,6 @@ function App() {
   };
 
   useKeyUp(handleKeyUp);
-
-  function isValidInput(expression,input){
-    //valid input can be: a number, 
-    //or a symbol if the previous input is a number, 
-    //or a negative sign not following another negative sign, 
-    //and there cannot be more than one decimal point per number
-    if (numbers.includes(input)) return true
-    else if (symbols.includes(input) && numbers.includes(expression.slice(-1))) return true
-    else if (input==='-' && expression.slice(-1)!=='-') return true
-    else if (input==='.' && !numberHasMoreThanOneDecimal(expression+input)) return true
-    return false
-  }
-
-  function numberHasMoreThanOneDecimal(input){
-    //find two decimal points separated by 0 or more numbers
-    return input.match(/\.\d*\./)
-  }
-
-  function isValidExpression(expression){
-    //we validated input but still need to handle the case of an expression that ends in a symbol being invalid
-    return symbols.includes(expression.slice(-1)) ? false : true
-  }
 
   function deleteLast(){
     setExpression(expression.slice(0,expression.length-1))
@@ -72,12 +68,7 @@ function App() {
             <button onClick={deleteLast}>⬅</button>
             <button onClick={()=>setMemory(expression)}>M</button>
             <button onClick={()=>setExpression(expression+memory)}>MR</button>
-            {symbols.map(val => 
-              <button key={val} onClick={()=>enterInput(val)}>
-                {val}
-              </button>
-            )}
-            {numbers.map(val => 
+            {[...symbols,...numbers].map(val => 
               <button key={val} onClick={()=>enterInput(val)}>
                 {val}
               </button>
