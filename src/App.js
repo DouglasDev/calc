@@ -28,14 +28,14 @@ export function isValidExpression(expression){
   return symbols.includes(expression.slice(-1)) ? false : true
 }
 
-function App() {
+export function App() {
   const [memory,setMemory]= useState(''),
         [expression,setExpression]= useState('')
 
   const { key } = useKeyUp();
 
   const handleKeyUp = ({ key }) => {
-    if (key==="Enter") displayResults()
+    if (key==="Enter"|| key==="=") displayResults()
     else if (key==="Backspace") deleteLast()
     else enterInput(String(key))    
   };
@@ -53,6 +53,9 @@ function App() {
 
   function enterInput(input){
     if (isValidInput(expression,input)) setExpression(expression+input)
+    //this prevents the enter key from triggering button presses unintentionally, 
+    //since we allow input through mouse clicks and keyboard
+    document.activeElement.blur();
   }
 
   return (
@@ -60,7 +63,7 @@ function App() {
       <h1 className="text-primary">Simple Calc</h1>
 
       <main className='calc-main card'>
-        <input readOnly type="text" value={expression.length ? expression : '0'} />
+        <input data-testid="calc-display" readOnly type="text" value={expression.length ? expression : '0'} />
 
         <div className='card-body'>
           <div className='keypad'>
@@ -82,5 +85,3 @@ function App() {
     </div>
   );
 }
-
-export default App;
