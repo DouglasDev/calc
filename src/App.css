@@ -20,3 +20,27 @@
 .App-link {
   color: #09d3ac;
 }
+.break {
+  flex-basis: 100%;
+  height: 0;
+}
+
+.calc-main{
+  width: 16rem;
+  margin: 4rem auto;
+}
+
+.keypad>button{
+  margin: .2rem;
+}
+
+.keypad{
+  width: 12rem;
+  margin: auto;
+}
+ 
+input{
+  width: max-content;
+  margin: 1rem auto 0;
+  box-sizing: border-box;
+}
