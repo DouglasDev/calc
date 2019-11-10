@@ -1,5 +1,4 @@
-import React, { useState } from 'react';
-import { useKeyUp } from "./keyboard-input-hook";
+import React, { useState,useEffect } from 'react';
 import './paper.min.css';
 import './App.css';
 
@@ -32,27 +31,34 @@ export function App() {
   const [memory,setMemory]= useState(''),
         [expression,setExpression]= useState('')
 
-  const { key } = useKeyUp();
-
-  const handleKeyUp = ({ key }) => {
-    if (key==="Enter"|| key==="=") displayResults()
-    else if (key==="Backspace") deleteLast()
-    else enterInput(String(key))    
-  };
-
-  useKeyUp(handleKeyUp);
+  useEffect(()=>{
+    const handleKeyUp = event => {
+      const { key } = event;
+      if (key==="Enter"|| key==="=") displayResults()
+      else if (key==="Backspace") deleteLast()
+      else enterInput(String(key))    
+    }
+  
+    window.addEventListener('keyup',handleKeyUp)
+    return ()=>window.removeEventListener('keyup',handleKeyUp)
+  },[])
 
   function deleteLast(){
-    setExpression(expression.slice(0,expression.length-1))
+    setExpression(expression=>expression.slice(0,expression.length-1))
   }
 
   function displayResults(){
-    if (!expression) setExpression('')
-    else if (isValidExpression(expression)) setExpression(String((new Function('return '+expression))()));
+    setExpression(expression=>{
+      if (!expression) return ''
+      else if (isValidExpression(expression)) return String((Function('return '+expression))())
+    })
   }
 
   function enterInput(input){
-    if (isValidInput(expression,input)) setExpression(expression+input)
+    setExpression(expression=>{
+      if (isValidInput(expression,input)) return expression+input
+      else return expression
+    })
     //this prevents the enter key from triggering button presses unintentionally, 
     //since we allow input through mouse clicks and keyboard
     document.activeElement.blur();

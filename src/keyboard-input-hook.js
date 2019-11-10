@@ -1,10 +1,5 @@
 import { useEffect, useState } from "react";
 
-//this is a modified version of https://github.com/bobinrinder/react-keyboard-input-hook
-//I added functionality to get the actual character that the key press returns when typing (e.key)
-
-export const FIRE_TV_KEY_CODES = [8, 13, 37, 38, 39, 40, 179, 227, 228];
-
 export default function useKey(
   handleKeyCallback = null,
   keyEvent = "keyup",
@@ -79,7 +74,7 @@ export default function useKey(
         });
       }
     };
-
+    console.log('adsasfd')
     // register event listener
     window.addEventListener(keyEvent, handleKey);
     // cleanup event listener
@@ -109,68 +104,4 @@ export function useKeyDown(
   blacklist = []
 ) {
   return useKey(handleKeyCallback, "keydown", whitelist, blacklist);
-}
-
-export function useFireTvKeyUp(
-  handleKeyCallback = null,
-  whitelist = FIRE_TV_KEY_CODES,
-  blacklist = []
-) {
-  return useKey(handleKeyCallback, "keyup", whitelist, blacklist);
-}
-
-export function useFireTvKeyDown(
-  handleKeyCallback = null,
-  whitelist = FIRE_TV_KEY_CODES,
-  blacklist = []
-) {
-  return useKey(handleKeyCallback, "keydown", whitelist, blacklist);
-}
-
-export function useKeyCombo(keyCodes = [], handleKeyCallback = null) {
-  const [currentlyPressedKeyCodes, setCurrentlyPressedKeyCodes] = useState([]);
-
-  const handleKeyDown = ({ keyCode, keyName, key, e }) => {
-    if (currentlyPressedKeyCodes.indexOf(keyCode) === -1) {
-      if (
-        checkIfArrayItemsinArray(keyCodes, [
-          ...currentlyPressedKeyCodes,
-          keyCode
-        ])
-      ) {
-        handleKeyCallback({ keyCode, keyName, key, e });
-        setCurrentlyPressedKeyCodes([]);
-      } else {
-        setCurrentlyPressedKeyCodes(prevState => [...prevState, keyCode]);
-      }
-    }
-  };
-  const handleKeyUp = ({ keyCode }) => {
-    const indexOfPressedKeyCode = currentlyPressedKeyCodes.indexOf(keyCode);
-    if (indexOfPressedKeyCode > -1) {
-      setCurrentlyPressedKeyCodes(prevState => [
-        ...prevState.slice(0, indexOfPressedKeyCode),
-        ...prevState.slice(indexOfPressedKeyCode + 1)
-      ]);
-    }
-  };
-
-  useKeyDown(handleKeyDown, keyCodes);
-  useKeyUp(handleKeyUp, keyCodes);
-
-  if (!keyCodes || keyCodes.length < 2 || !handleKeyCallback) {
-    console.warn("Invalid arguments for usekeyCombo!");
-  }
-}
-
-export function checkIfArrayItemsinArray(arrayItems, array) {
-  if (array.length === 0 || arrayItems.length === 0) {
-    return false;
-  }
-  for (let i = 0; i < arrayItems.length; i++) {
-    if (array.indexOf(arrayItems[i]) === -1) {
-      return false;
-    }
-  }
-  return true;
 }
